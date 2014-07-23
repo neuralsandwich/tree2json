@@ -1,0 +1,89 @@
+import sys
+import re
+import json
+from Queue import Queue
+
+
+class Node(object):
+    def __init__(self, data):
+        self.data = data
+        self.children = []
+
+    def add_child(self, obj):
+        self.children.append(obj)
+
+    def print_self(self):
+        if len(self.children) > 0:
+            print "Node: " + self.data
+        else:
+            print "Leaf: " + self.data
+        for c in self.children:
+            c.print_self()
+
+
+class MyEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if not isinstance(obj, Node):
+            return super(MyEncoder, self).default(obj)
+
+        return obj.__dict__
+
+
+def peek_stack(stack):
+        # No peek for list? No Stack for python?
+        current_parent = stack[len(stack) - 1]
+        #stack.append(current_parent)
+        return current_parent
+
+
+def main():
+    q = Queue()
+    s = []
+    child = re.compile(r"(\+|\||\`)")
+
+    # Convert input to a queue
+    for line in sys.stdin:
+        if line is not "\n":
+            q.put(line)
+
+    # Grab the root node to create the tree
+    tree = Node(q.get())
+    s.append(tree)
+    depth = 1
+    last_node = s[0]
+
+    # Start parsing the rest of the tree
+    for elem in list(q.queue):
+        """
+        print "======================================="
+        print "Element: " + elem
+        """
+        current_depth = len(child.findall(elem))
+        current_node = Node(re.search("\w+\.?.*$", elem).group(0))
+        """
+        print "Current node name: " + current_node.data
+        print "========================================\n"
+        """
+        if current_depth == depth:
+            current_parent = peek_stack(s)
+            current_parent.add_child(current_node)
+            last_node = current_node
+            depth = current_depth
+        elif current_depth > depth:
+            s.append(last_node)
+            current_parent = peek_stack(s)
+            current_parent.add_child(current_node)
+            last_node = current_node
+            depth = current_depth
+        elif current_depth < depth:
+            s.pop()
+            current_parent = peek_stack(s)
+            current_parent.add_child(current_node)
+            last_node = current_node
+            depth = current_depth
+
+    print json.dumps(tree, cls=MyEncoder)
+
+
+if __name__ == '__main__':
+    main()
