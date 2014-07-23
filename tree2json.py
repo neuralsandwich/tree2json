@@ -12,14 +12,6 @@ class Node(object):
     def add_child(self, obj):
         self.children.append(obj)
 
-    def print_self(self):
-        if len(self.children) > 0:
-            print "Node: " + self.data
-        else:
-            print "Leaf: " + self.data
-        for c in self.children:
-            c.print_self()
-
 
 class MyEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -32,7 +24,6 @@ class MyEncoder(json.JSONEncoder):
 def peek_stack(stack):
         # No peek for list? No Stack for python?
         current_parent = stack[len(stack) - 1]
-        #stack.append(current_parent)
         return current_parent
 
 
@@ -54,16 +45,9 @@ def main():
 
     # Start parsing the rest of the tree
     for elem in list(q.queue):
-        """
-        print "======================================="
-        print "Element: " + elem
-        """
         current_depth = len(child.findall(elem))
         current_node = Node(re.search("\w+\.?.*$", elem).group(0))
-        """
-        print "Current node name: " + current_node.data
-        print "========================================\n"
-        """
+        
         if current_depth == depth:
             current_parent = peek_stack(s)
             current_parent.add_child(current_node)
