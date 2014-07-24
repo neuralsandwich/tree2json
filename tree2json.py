@@ -30,6 +30,14 @@ def peek_stack(stack):
 def main():
     q = Queue()
     s = []
+
+    """
+    Detecting depth:
+        '|-- ' - A Child for the above node.
+        '`-- ' - Last child for the above node.
+        '|   ' - Parent is a child.
+        '    ' - Parent is a child.
+    """
     node_depth = re.compile(r"(\|\-\- |\|   |\`\-\- |    )")
 
     # Convert input to a queue
