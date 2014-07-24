@@ -13,7 +13,7 @@ class Node(object):
         self.children.append(obj)
 
 
-class MyEncoder(json.JSONEncoder):
+class NodeEncoder(json.JSONEncoder):
     def default(self, obj):
         if not isinstance(obj, Node):
             return super(MyEncoder, self).default(obj)
@@ -76,7 +76,7 @@ def main():
             last_node = current_node
             last_depth = current_depth
 
-    print json.dumps(tree, cls=MyEncoder)
+    print json.dumps(tree, cls=NodeEncoder)
 
 
 if __name__ == '__main__':
