@@ -30,7 +30,7 @@ def peek_stack(stack):
 def main():
     q = Queue()
     s = []
-    child = re.compile(r"(\+|\||\`)")
+    node_depth = re.compile(r"(\|\-\- |\|   |\`\-\- |    )")
 
     # Convert input to a queue
     for line in sys.stdin:
@@ -40,31 +40,33 @@ def main():
     # Grab the root node to create the tree
     tree = Node(q.get())
     s.append(tree)
-    depth = 1
+    last_depth = 1
     last_node = s[0]
 
     # Start parsing the rest of the tree
     for elem in list(q.queue):
-        current_depth = len(child.findall(elem))
+        current_depth = len(node_depth.findall(elem))
         current_node = Node(re.search("\w+\.?.*$", elem).group(0))
-        
-        if current_depth == depth:
+
+        if current_depth == last_depth:
             current_parent = peek_stack(s)
             current_parent.add_child(current_node)
             last_node = current_node
-            depth = current_depth
-        elif current_depth > depth:
+            last_depth = current_depth
+        elif current_depth > last_depth:
             s.append(last_node)
             current_parent = peek_stack(s)
             current_parent.add_child(current_node)
             last_node = current_node
-            depth = current_depth
-        elif current_depth < depth:
-            s.pop()
+            last_depth = current_depth
+        elif current_depth < last_depth:
+            #print "This must less: " + str((last_depth - current_depth))
+            for i in xrange((last_depth - current_depth)):
+                s.pop()
             current_parent = peek_stack(s)
             current_parent.add_child(current_node)
             last_node = current_node
-            depth = current_depth
+            last_depth = current_depth
 
     print json.dumps(tree, cls=MyEncoder)
 
