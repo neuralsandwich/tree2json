@@ -30,6 +30,7 @@ def peek_stack(stack):
 def main():
     q = Queue()
     s = []
+    stop_reading = False
 
     """
     Detecting depth:
@@ -54,27 +55,32 @@ def main():
     # Start parsing the rest of the tree
     for elem in list(q.queue):
         current_depth = len(node_depth.findall(elem))
-        current_node = Node(re.search("\w+\.?.*$", elem).group(0))
+        try:
+            current_node = Node(re.search("\w+\.?.*$", elem).group(0))
+        except:
+            current_node = None
+            stop_reading = True
 
-        if current_depth == last_depth:
-            current_parent = peek_stack(s)
-            current_parent.add_child(current_node)
-            last_node = current_node
-            last_depth = current_depth
-        elif current_depth > last_depth:
-            s.append(last_node)
-            current_parent = peek_stack(s)
-            current_parent.add_child(current_node)
-            last_node = current_node
-            last_depth = current_depth
-        elif current_depth < last_depth:
-            #print "This must less: " + str((last_depth - current_depth))
-            for i in xrange((last_depth - current_depth)):
-                s.pop()
-            current_parent = peek_stack(s)
-            current_parent.add_child(current_node)
-            last_node = current_node
-            last_depth = current_depth
+        if (current_node is not None) and (stop_reading is False):
+            if current_depth == last_depth:
+                current_parent = peek_stack(s)
+                current_parent.add_child(current_node)
+                last_node = current_node
+                last_depth = current_depth
+            elif current_depth > last_depth:
+                s.append(last_node)
+                current_parent = peek_stack(s)
+                current_parent.add_child(current_node)
+                last_node = current_node
+                last_depth = current_depth
+            elif current_depth < last_depth:
+                #print "This must less: " + str((last_depth - current_depth))
+                for i in xrange((last_depth - current_depth)):
+                    s.pop()
+                current_parent = peek_stack(s)
+                current_parent.add_child(current_node)
+                last_node = current_node
+                last_depth = current_depth
 
     print json.dumps(tree, cls=NodeEncoder)
 
