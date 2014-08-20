@@ -82,7 +82,7 @@ def main():
                 last_node = current_node
                 last_depth = current_depth
 
-    print json.dumps(tree, cls=NodeEncoder)
+    print json.dumps(tree, cls=NodeEncoder, indent=2, separators=(',', ': '))
 
 
 if __name__ == '__main__':
