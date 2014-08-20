@@ -6,7 +6,7 @@ from Queue import Queue
 
 class Node(object):
     def __init__(self, data):
-        self.data = data
+        self.data = data.rstrip()
         self.children = []
 
     def add_child(self, obj):
@@ -16,7 +16,7 @@ class Node(object):
 class NodeEncoder(json.JSONEncoder):
     def default(self, obj):
         if not isinstance(obj, Node):
-            return super(MyEncoder, self).default(obj)
+            return super(NodeEncoder, self).default(obj)
 
         return obj.__dict__
 
